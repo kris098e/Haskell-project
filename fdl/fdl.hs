@@ -33,9 +33,6 @@ auxAply :: State -> [Rule] -> [State]
 auxAply [] _ = []
 auxAply (x : xs) rules = applyTheRule x rules : auxAply xs rules
 
--- flatten :: [State] -> State
--- flatten xss = [ [ x | x <- xs ] | xs <- xss]
-
 -- go from depth n to depth n+1
 apply :: State -> [Rule] -> State
 apply state rules = concat $ auxAply state rules 
