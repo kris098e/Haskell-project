@@ -33,16 +33,19 @@ auxAply :: State -> [Rule] -> [State]
 auxAply [] _ = []
 auxAply (x : xs) rules = applyTheRule x rules : auxAply xs rules
 
-flatten :: [State] -> State
-flatten xss = [ [ x | x <- xs ] | xs <- xss]
+-- flatten :: [State] -> State
+-- flatten xss = [ [ x | x <- xs ] | xs <- xss]
 
 -- go from depth n to depth n+1
 apply :: State -> [Rule] -> State
-apply state rules = flatten $ auxAply state rules 
+apply state rules = concat $ auxAply state rules 
 
 -- expand to target depth
 expand :: State -> [Rule] -> Int -> State
-expand = error "Task 2"
+expand state [] _ = state
+expand xs rules i
+  | i > 0 = expand (apply xs rules) rules $ i - 1
+  | otherwise = xs
 
 -- convert fractal into sequence of turtle graphics commands
 process :: Fractal -> [Command]
