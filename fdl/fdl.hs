@@ -23,9 +23,22 @@ rules2 = [Rule 'X' "XRYF", Rule 'Y' "FXLY"]
 fractal1 = ("F", rules1, let m 'F' = Forward; m 'L' = LeftTurn 60; m 'R' = RightTurn 120 in m)
 fractal2 = ("FX", rules2, let m 'F' = Forward; m 'L' = LeftTurn 90; m 'R' = RightTurn 90; m _ = Nop in m)
 
+applyTheRule :: Char -> [Rule] -> State
+applyTheRule x [] = x : []
+applyTheRule x (Rule c seq : rules)
+  | x == c = seq
+  | otherwise = applyTheRule x rules
+
+auxAply :: State -> [Rule] -> [State]
+auxAply [] _ = []
+auxAply (x : xs) rules = applyTheRule x rules : auxAply xs rules
+
+flatten :: [State] -> State
+flatten xss = [ [ x | x <- xs ] | xs <- xss]
+
 -- go from depth n to depth n+1
 apply :: State -> [Rule] -> State
-apply = error "Task 1"
+apply state rules = flatten $ auxAply state rules 
 
 -- expand to target depth
 expand :: State -> [Rule] -> Int -> State
