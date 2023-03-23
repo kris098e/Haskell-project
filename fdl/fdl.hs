@@ -44,7 +44,6 @@ expand xs rules i
   | i > 0 = expand (apply xs rules) rules $ i - 1
   | otherwise = xs
 
-
 convertToCommand :: State -> Double -> (Char -> Command) -> [Command]
 convertToCommand state scale f = [f x | x <- state]
 
@@ -53,7 +52,6 @@ process :: Fractal -> [Command]
 process (state, rules, f, i, scale) =
   let expandedState = expand state rules i
   in convertToCommand expandedState scale f
-
 
 -- helper function to go from two floating point values to a pair of integers
 toPoint :: Double -> Double -> Point
@@ -67,7 +65,7 @@ drawIt (w, x, y, angle, len) (Forward:xs)          = let
   x' = x+len*(cos angle)
   y' = y-len*(sin angle)
   in do
-    drawInWindow w (line (toPoint x y) (toPoint x' y'))
+    drawInWindow w ( line (toPoint x y) (toPoint x' y'))
     drawIt (w, x', y', angle, len) xs
 drawIt (w, x, y, angle, len) (Backward:xs)          = let
   x' = x-len*(cos angle)
@@ -124,6 +122,6 @@ drawFdl fileName = do
   fractal <- readFractal fileName
   drawFractal fractal
 
--- main function that draws the snowflake fractal
+-- main function that draws
 main :: IO ()
 main = drawFdl "examples/sierpinski2.fdl"
