@@ -44,9 +44,16 @@ expand xs rules i
   | i > 0 = expand (apply xs rules) rules $ i - 1
   | otherwise = xs
 
+
+convertToCommand :: State -> Double -> (Char -> Command) -> [Command]
+convertToCommand state scale f = [f x | x <- state]
+
 -- convert fractal into sequence of turtle graphics commands
 process :: Fractal -> [Command]
-process = error "Task 3"
+process (state, rules, f, i, scale) =
+  let expandedState = expand state rules i
+  in convertToCommand expandedState scale f
+
 
 -- helper function to go from two floating point values to a pair of integers
 toPoint :: Double -> Double -> Point
@@ -119,4 +126,4 @@ drawFdl fileName = do
 
 -- main function that draws the snowflake fractal
 main :: IO ()
-main = drawFdl "snowflake.fdl"
+main = drawFdl "examples/sierpinski2.fdl"
