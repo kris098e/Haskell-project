@@ -44,14 +44,14 @@ expand xs rules i
   | i > 0 = expand (apply xs rules) rules $ i - 1
   | otherwise = xs
 
-convertToCommand :: State -> Double -> (Char -> Command) -> [Command]
-convertToCommand state scale f = [f x | x <- state]
 
 -- convert fractal into sequence of turtle graphics commands
 process :: Fractal -> [Command]
-process (state, rules, f, i, scale) =
+process (state, rules, f, i, _) =
   let expandedState = expand state rules i
-  in convertToCommand expandedState scale f
+  in convertToCommand expandedState f
+  where
+    convertToCommand state f = [f x | x <- state]
 
 -- helper function to go from two floating point values to a pair of integers
 toPoint :: Double -> Double -> Point
@@ -124,4 +124,4 @@ drawFdl fileName = do
 
 -- main function that draws
 main :: IO ()
-main = drawFdl "examples/sierpinski2.fdl"
+main = drawFdl "examples/tree.fdl"
