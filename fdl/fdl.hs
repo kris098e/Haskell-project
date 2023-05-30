@@ -1,4 +1,5 @@
 import Graphics.HGL
+import Data.Maybe (fromMaybe)
 
 -- state represented by list of letters
 type State = [Char]
@@ -23,35 +24,23 @@ rules2 = [Rule 'X' "XRYF", Rule 'Y' "FXLY"]
 fractal1 = ("F", rules1, let m 'F' = Forward; m 'L' = LeftTurn 60; m 'R' = RightTurn 120 in m)
 fractal2 = ("FX", rules2, let m 'F' = Forward; m 'L' = LeftTurn 90; m 'R' = RightTurn 90; m _ = Nop in m)
 
-applyTheRule :: Char -> [Rule] -> State
-applyTheRule x [] = x : []
-applyTheRule x (Rule c seq : rules)
-  | x == c = seq
-  | otherwise = applyTheRule x rules
 
-auxAply :: State -> [Rule] -> [State]
-auxAply [] _ = []
-auxAply (x : xs) rules = applyTheRule x rules : auxAply xs rules
-
--- go from depth n to depth n+1
 apply :: State -> [Rule] -> State
-apply state rules = concat $ auxAply state rules 
+apply state rules = concatMap (\x -> applyTheRule x rulepairs) state
+  where
+    rulepairs = map (\(Rule x xs) -> (x, xs)) rules
+    applyTheRule x rules = fromMaybe [x] (lookup x rules)
 
 -- expand to target depth
 expand :: State -> [Rule] -> Int -> State
-expand state [] _ = state
 expand xs rules i
-  | i > 0 = expand (apply xs rules) rules $ i - 1
+  | i > 0 = expand (apply xs rules) rules $ i - 1 
   | otherwise = xs
 
 
 -- convert fractal into sequence of turtle graphics commands
 process :: Fractal -> [Command]
-process (state, rules, f, i, _) =
-  let expandedState = expand state rules i
-  in convertToCommand expandedState f
-  where
-    convertToCommand state f = [f x | x <- state]
+process (state, rules, f, i, _) = map f $ expand state rules i
 
 -- helper function to go from two floating point values to a pair of integers
 toPoint :: Double -> Double -> Point
@@ -124,4 +113,4 @@ drawFdl fileName = do
 
 -- main function that draws
 main :: IO ()
-main = drawFdl "examples/tree.fdl"
+main = drawFdl "examples/dragon.fdl"
